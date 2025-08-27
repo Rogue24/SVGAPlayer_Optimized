@@ -201,7 +201,7 @@ Note that if the same resource path is being played or has already been loaded, 
 
 **📢 Note**: Internally, it determines whether to call the downloader for download by checking whether the resource path has the prefixes `http://` and `https://`. Otherwise, it will use the local resource loading method.
 
-*💡In addition to the static property, you can also set a custom downloader on each `SVGAExPlayer` instance for per-player configuration:*
+💡*In addition to the static property, you can also set a custom downloader on each `SVGAExPlayer` instance for per-player configuration:*
 
 ```swift
 let player = SVGAExPlayer()
@@ -239,7 +239,7 @@ SVGAExPlayer.loader = { svgaSource, success, failure, forwardDownload, forwardLo
 * `forwardDownload`: The original remote loading method within `SVGAExPlayer` (if `SVGAExPlayer.downloader` is implemented, this closure will be called).
 * `forwardLoadAsset`: The original local resource loading method within `SVGAExPlayer`.
 
-*💡Similarly, each `SVGAExPlayer` instance supports its own loader, allowing fine-grained control without affecting other players:*
+💡*Similarly, each `SVGAExPlayer` instance supports its own loader, allowing fine-grained control without affecting other players:*
 
 ```swift
 let player = SVGAExPlayer()
@@ -258,7 +258,7 @@ SVGAExPlayer.cacheKeyGenerator = { svgaSource in
 }
 ```
 
-*💡You may also define a cache key generator per instance to customize caching behavior individually:*
+💡*You may also define a cache key generator per instance to customize caching behavior individually:*
 
 ```swift
 let player = SVGAExPlayer()
