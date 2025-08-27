@@ -201,6 +201,15 @@ Note that if the same resource path is being played or has already been loaded, 
 
 **📢 Note**: Internally, it determines whether to call the downloader for download by checking whether the resource path has the prefixes `http://` and `https://`. Otherwise, it will use the local resource loading method.
 
+*💡In addition to the static property, you can also set a custom downloader on each `SVGAExPlayer` instance for per-player configuration:*
+
+```swift
+let player = SVGAExPlayer()
+player.downloader = { svgaSource, success, failure in
+    // Your instance-level download logic here
+}
+```
+
 #### Custom Resource Loader
 
 If you want complete control over the loading process, you can implement `SVGAExPlayer.loader`:
@@ -230,6 +239,15 @@ SVGAExPlayer.loader = { svgaSource, success, failure, forwardDownload, forwardLo
 * `forwardDownload`: The original remote loading method within `SVGAExPlayer` (if `SVGAExPlayer.downloader` is implemented, this closure will be called).
 * `forwardLoadAsset`: The original local resource loading method within `SVGAExPlayer`.
 
+*💡Similarly, each `SVGAExPlayer` instance supports its own loader, allowing fine-grained control without affecting other players:*
+
+```swift
+let player = SVGAExPlayer()
+player.loader = { svgaSource, success, failure, forwardDownload, forwardLoadAsset in
+    // Your instance-level load logic here
+}
+```
+
 #### Custom Cache Key Generator
 
 After successful loading, it will use the default caching method (`NSCache`) for caching, with the SVGA path as the key. If you need a custom cache key, you can implement `SVGAExPlayer.cacheKeyGenerator`:
@@ -237,6 +255,15 @@ After successful loading, it will use the default caching method (`NSCache`) for
 ```swift
 SVGAExPlayer.cacheKeyGenerator = { svgaSource in
     return svgaSource.md5 // Encrypt using MD5
+}
+```
+
+*💡You may also define a cache key generator per instance to customize caching behavior individually:*
+
+```swift
+let player = SVGAExPlayer()
+player.cacheKeyGenerator = { svgaSource in
+    return svgaSource.md5
 }
 ```
 
