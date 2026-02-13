@@ -7,6 +7,7 @@
 
 import UIKit
 import SVGAPlayer_Optimized
+import Photos
 
 class ViewController: UIViewController {
     let operationBar = UIView()
@@ -85,6 +86,52 @@ private extension ViewController {
     // MARK: - 停止
     @objc func stop() {
         player.stop()
+    }
+    
+    // MARK: - 截图
+    @objc func snapshot() {
+        guard player.entity != nil else {
+            JPProgressHUD.showInfo(withStatus: "没有正在播放的SVGA")
+            return
+        }
+        
+        JPProgressHUD.show()
+        
+        let isPlaying = player.isPlaying
+        if isPlaying {
+            player.pause()
+        }
+        
+        PHPhotoLibrary.requestAuthorization { status in
+            guard status == .authorized else {
+                DispatchQueue.main.async {
+                    JPProgressHUD.showInfo(withStatus: "木有权限")
+                    if isPlaying { self.player.play() }
+                }
+                return
+            }
+            
+            guard let image = self.player.snapshotCurrentFrame(withPNG: true) else {
+                DispatchQueue.main.async {
+                    JPProgressHUD.showError(withStatus: "截取失败")
+                    if isPlaying { self.player.play() }
+                }
+                return
+            }
+            
+            PHPhotoLibrary.shared().performChanges {
+                PHAssetChangeRequest.creationRequestForAsset(from: image)
+            } completionHandler: { success, error in
+                DispatchQueue.main.async {
+                    if success {
+                        JPProgressHUD.showSuccess(withStatus: "保存成功")
+                    } else {
+                        JPProgressHUD.showError(withStatus: error?.localizedDescription ?? "截取失败")
+                    }
+                    if isPlaying { self.player.play() }
+                }
+            }
+        }
     }
 }
 
@@ -203,7 +250,7 @@ private extension ViewController {
     func setupTopItems() {
         let playRemoteBtn = UIButton(type: .system)
         playRemoteBtn.setTitle("Remote SVGA", for: .normal)
-        playRemoteBtn.titleLabel?.font = .systemFont(ofSize: 16.px, weight: .bold)
+        playRemoteBtn.titleLabel?.font = .systemFont(ofSize: 15.px, weight: .bold)
         playRemoteBtn.tintColor = .systemYellow
         playRemoteBtn.addTarget(self, action: #selector(playRemote), for: .touchUpInside)
         playRemoteBtn.sizeToFit()
@@ -213,7 +260,7 @@ private extension ViewController {
         
         let playLocalBtn = UIButton(type: .system)
         playLocalBtn.setTitle("Local SVGA", for: .normal)
-        playLocalBtn.titleLabel?.font = .systemFont(ofSize: 16.px, weight: .bold)
+        playLocalBtn.titleLabel?.font = .systemFont(ofSize: 15.px, weight: .bold)
         playLocalBtn.tintColor = .systemTeal
         playLocalBtn.addTarget(self, action: #selector(playLocal), for: .touchUpInside)
         playLocalBtn.sizeToFit()
@@ -239,7 +286,7 @@ private extension ViewController {
         func createBtn(_ title: String, _ action: Selector) -> UIButton {
             let btn = UIButton(type: .system)
             btn.setTitle(title, for: .normal)
-            btn.titleLabel?.font = .systemFont(ofSize: 15.px, weight: .medium)
+            btn.titleLabel?.font = .systemFont(ofSize: 14.px, weight: .medium)
             btn.tintColor = .white
             btn.addTarget(self, action: action, for: .touchUpInside)
             btn.frame.size = CGSize(width: 60.px, height: NavBarH)
@@ -260,6 +307,10 @@ private extension ViewController {
         
         stackView.addArrangedSubview(
             createBtn("Stop", #selector(stop))
+        )
+        
+        stackView.addArrangedSubview(
+            createBtn("Snapshot", #selector(snapshot))
         )
     }
     

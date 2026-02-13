@@ -488,6 +488,42 @@ static inline void _jp_dispatch_sync_on_main_queue(void (^block)(void)) {
     }
 }
 
+#pragma mark 截取当前帧画面
+- (UIImage *)snapshotCurrentFrameWithPNG:(BOOL)asPNG {
+    if (self.isAnimating) {
+        _JPLog(@"[SVGARePlayer_%p] 播放中，无法截取", self);
+        return nil;
+    }
+    
+    SVGAVideoEntity *videoItem = self.videoItem;
+    CGSize size = videoItem.videoSize;
+    
+    if (!videoItem || size.width < 1 || size.height < 1) {
+        _JPLog(@"[SVGARePlayer_%p] videoItem为空，无法截取", self);
+        return nil;
+    }
+    
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size format:[UIGraphicsImageRendererFormat defaultFormat]];
+    
+    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
+        if ([NSThread isMainThread]) {
+            [self.drawLayer renderInContext:context.CGContext];
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [self.drawLayer renderInContext:context.CGContext];
+            });
+        }
+    }];
+    
+    // 代码绘制的图片默认为jpeg格式（没有透明通道），png格式需要手动转换
+    if (image && asPNG) {
+        UIImage *pngImage = [UIImage imageWithData:UIImagePNGRepresentation(image)];
+        image = pngImage ? pngImage : image;
+    }
+    
+    return image;
+}
+
 #pragma mark - 私有方法
 
 /// 停止音频播放

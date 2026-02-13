@@ -137,6 +137,10 @@ typedef NS_ENUM(NSUInteger, SVGARePlayerStoppedScene) {
 - (void)stopAnimation; // ==> [self stopAnimation:self.userStoppedScene];
 - (void)stopAnimation:(SVGARePlayerStoppedScene)scene;
 
+#pragma mark - 截取当前帧画面
+/// 截取生成的图片，显示时可以有透明背景，但保存到相册则不能有透明背景，需要转成PNG格式再保存才可以。
+- (nullable UIImage *)snapshotCurrentFrameWithPNG:(BOOL)asPNG;
+
 #pragma mark - Dynamic Object
 - (void)setImage:(nullable UIImage *)image forKey:(NSString *)aKey;
 - (void)setAttributedText:(nullable NSAttributedString *)attributedText forKey:(NSString *)aKey;
