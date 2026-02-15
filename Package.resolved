@@ -1,0 +1,24 @@
+{
+  "originHash" : "7a61446394793adcb23ac47641bcbe64b5a7ed4d069ad808b8fe8187d815e561",
+  "pins" : [
+    {
+      "identity" : "svgaplayer-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Rogue24/SVGAPlayer-iOS.git",
+      "state" : {
+        "branch" : "SPM",
+        "revision" : "eca4496098777deed64d96ab0b3f84af2e78774e"
+      }
+    },
+    {
+      "identity" : "ziparchive",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ZipArchive/ZipArchive.git",
+      "state" : {
+        "revision" : "df35718ea19a94e015b91dc4881dee028ce4cdba",
+        "version" : "2.6.0"
+      }
+    }
+  ],
+  "version" : 3
+}

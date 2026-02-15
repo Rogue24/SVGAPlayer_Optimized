@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -176,6 +176,9 @@
 				Base,
 			);
 			mainGroup = 009F1D562A95FC80009C9FF4;
+			packageReferences = (
+				0079757A2F3F004B00B178E1 /* XCLocalSwiftPackageReference "../../SVGAPlayer_Optimized" */,
+			);
 			productRefGroup = 009F1D602A95FC80009C9FF4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -212,9 +215,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Demo/Pods-Demo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Demo/Pods-Demo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -486,6 +493,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0079757A2F3F004B00B178E1 /* XCLocalSwiftPackageReference "../../SVGAPlayer_Optimized" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../SVGAPlayer_Optimized;
+		};
+/* End XCLocalSwiftPackageReference section */
 	};
 	rootObject = 009F1D572A95FC80009C9FF4 /* Project object */;
 }
