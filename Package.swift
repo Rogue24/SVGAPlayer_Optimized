@@ -22,15 +22,22 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SVGAPlayer_Optimized",
+            name: "SVGARePlayer",
             dependencies: [
                 .product(
                     name: "SVGAPlayer",
                     package: "SVGAPlayer-iOS"
                 ),
             ],
-            path: "SVGAPlayer_Optimized",
-            publicHeadersPath: ".",
-        )
+            path: "Sources/SVGARePlayer",
+            publicHeadersPath: "."
+        ),
+        .target(
+            name: "SVGAPlayer_Optimized",
+            dependencies: [
+                "SVGARePlayer"
+            ],
+            path: "Sources/SVGAExPlayer"
+        ),
     ]
 )

@@ -6,11 +6,11 @@
 //
 
 #import "SVGARePlayer.h"
-#import <SVGAPlayer/SVGAVideoSpriteEntity.h>
-#import <SVGAPlayer/SVGAContentLayer.h>
-#import <SVGAPlayer/SVGABitmapLayer.h>
-#import <SVGAPlayer/SVGAAudioLayer.h>
-#import <SVGAPlayer/SVGAAudioEntity.h>
+#import "SVGAVideoSpriteEntity.h"
+#import "SVGAContentLayer.h"
+#import "SVGABitmapLayer.h"
+#import "SVGAAudioLayer.h"
+#import "SVGAAudioEntity.h"
 #import <pthread.h>
 
 #ifdef DEBUG

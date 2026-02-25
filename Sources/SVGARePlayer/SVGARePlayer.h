@@ -6,11 +6,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SVGAVideoEntity.h"
 #import "SVGAVideoEntity+Extension.h"
+@class SVGARePlayer;
 
 NS_ASSUME_NONNULL_BEGIN
-
-@class SVGARePlayer;
 
 typedef void(^SVGARePlayerDrawingBlock)(CALayer *contentLayer, NSInteger frameIndex);
 

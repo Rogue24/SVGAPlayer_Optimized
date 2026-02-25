@@ -5,7 +5,7 @@
 //  Created by aa on 2023/11/20.
 //
 
-#import <SVGAPlayer/SVGAVideoEntity.h>
+#import "SVGAVideoEntity.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
