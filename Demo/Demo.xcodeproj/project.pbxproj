@@ -36,6 +36,8 @@
 		00F96EA52F5036CB00E6B0F8 /* SVGAPlayer_Optimized in Frameworks */ = {isa = PBXBuildFile; productRef = 00F96EA42F5036CB00E6B0F8 /* SVGAPlayer_Optimized */; };
 		00F96EA82F5036EF00E6B0F8 /* SVGAPlayer_Optimized in Frameworks */ = {isa = PBXBuildFile; productRef = 00F96EA72F5036EF00E6B0F8 /* SVGAPlayer_Optimized */; };
 		00F96EAB2F50451900E6B0F8 /* SVGAPlayer_Optimized in Frameworks */ = {isa = PBXBuildFile; productRef = 00F96EAA2F50451900E6B0F8 /* SVGAPlayer_Optimized */; };
+		00F96EB12F50616A00E6B0F8 /* SVGAPlayer_Optimized in Frameworks */ = {isa = PBXBuildFile; productRef = 00F96EB02F50616A00E6B0F8 /* SVGAPlayer_Optimized */; };
+		00F96EB42F5061E900E6B0F8 /* SVGAPlayer_Optimized in Frameworks */ = {isa = PBXBuildFile; productRef = 00F96EB32F5061E900E6B0F8 /* SVGAPlayer_Optimized */; };
 		1AD0CD4E2B05563C0020285D /* bgImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1AD0CD4D2B05563C0020285D /* bgImage.jpg */; };
 		8A16DAC5DADB8C0D9DE81BE0 /* Pods_Demo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6122F989F02DCF7AFEACB3C /* Pods_Demo.framework */; };
 /* End PBXBuildFile section */
@@ -72,6 +74,7 @@
 			files = (
 				00BC91E22F4ECD6700F27210 /* SVGAPlayer_Optimized in Frameworks */,
 				0079F9E02F4EAF9100969D6E /* SVGAPlayer_Optimized in Frameworks */,
+				00F96EB42F5061E900E6B0F8 /* SVGAPlayer_Optimized in Frameworks */,
 				00F96EA22F50355700E6B0F8 /* SVGAPlayer_Optimized in Frameworks */,
 				0079F9D72F4EA63100969D6E /* SVGAPlayer_Optimized in Frameworks */,
 				00BC91D62F4EB11000F27210 /* SVGAPlayer_Optimized in Frameworks */,
@@ -86,6 +89,7 @@
 				00BC91DC2F4EB20500F27210 /* SVGAPlayer_Optimized in Frameworks */,
 				00F96E822F4EF82900E6B0F8 /* SVGAPlayer_Optimized in Frameworks */,
 				00F96E9F2F50315400E6B0F8 /* SVGAPlayer_Optimized in Frameworks */,
+				00F96EB12F50616A00E6B0F8 /* SVGAPlayer_Optimized in Frameworks */,
 				8A16DAC5DADB8C0D9DE81BE0 /* Pods_Demo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -209,7 +213,7 @@
 			);
 			mainGroup = 009F1D562A95FC80009C9FF4;
 			packageReferences = (
-				00F96EA92F50451900E6B0F8 /* XCLocalSwiftPackageReference "SVGAPlayer_Optimized" */,
+				00F96EB22F5061E900E6B0F8 /* XCLocalSwiftPackageReference "../../SVGAPlayer_Optimized" */,
 			);
 			productRefGroup = 009F1D602A95FC80009C9FF4 /* Products */;
 			projectDirPath = "";
@@ -247,9 +251,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Demo/Pods-Demo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Demo/Pods-Demo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -523,11 +531,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		00F96EA92F50451900E6B0F8 /* XCLocalSwiftPackageReference "SVGAPlayer_Optimized" */ = {
+		00F96EB22F5061E900E6B0F8 /* XCLocalSwiftPackageReference "../../SVGAPlayer_Optimized" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../SVGAPlayer_Optimized;
 		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		00F96EAF2F50616A00E6B0F8 /* XCRemoteSwiftPackageReference "SVGAPlayer_Optimized" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Rogue24/SVGAPlayer_Optimized.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		0079F9D62F4EA63100969D6E /* SVGAPlayer_Optimized */ = {
@@ -591,6 +610,15 @@
 			productName = SVGAPlayer_Optimized;
 		};
 		00F96EAA2F50451900E6B0F8 /* SVGAPlayer_Optimized */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SVGAPlayer_Optimized;
+		};
+		00F96EB02F50616A00E6B0F8 /* SVGAPlayer_Optimized */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00F96EAF2F50616A00E6B0F8 /* XCRemoteSwiftPackageReference "SVGAPlayer_Optimized" */;
+			productName = SVGAPlayer_Optimized;
+		};
+		00F96EB32F5061E900E6B0F8 /* SVGAPlayer_Optimized */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SVGAPlayer_Optimized;
 		};
