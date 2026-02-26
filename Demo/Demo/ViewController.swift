@@ -6,8 +6,8 @@
 //
 
 import UIKit
-import SVGAPlayer_Optimized
 import Photos
+import SVGAPlayer_Optimized
 
 class ViewController: UIViewController {
     let operationBar = UIView()

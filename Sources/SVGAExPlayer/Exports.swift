@@ -1,1 +1,1 @@
-@_exported import SVGARePlayer
+@_exported import SVGAPlayer_Objc

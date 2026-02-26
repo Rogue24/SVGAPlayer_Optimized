@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SVGAPlayer_Optimized",
     platforms: [
-        .iOS(.v12)
+        .iOS("15.5")
     ],
     products: [
         .library(
@@ -22,20 +22,20 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SVGARePlayer",
+            name: "SVGAPlayer_Objc",
             dependencies: [
                 .product(
                     name: "SVGAPlayer",
                     package: "SVGAPlayer-iOS"
                 ),
             ],
-            path: "Sources/SVGARePlayer",
+            path: "Sources/SVGAPlayer_Objc",
             publicHeadersPath: "."
         ),
         .target(
             name: "SVGAPlayer_Optimized",
             dependencies: [
-                "SVGARePlayer"
+                "SVGAPlayer_Objc"
             ],
             path: "Sources/SVGAExPlayer"
         ),
