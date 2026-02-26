@@ -10,7 +10,6 @@
 #import "SVGAContentLayer.h"
 #import "SVGABitmapLayer.h"
 #import "SVGAAudioLayer.h"
-#import "SVGAAudioEntity.h"
 #import <pthread.h>
 
 #ifdef DEBUG
@@ -489,7 +488,7 @@ static inline void _jp_dispatch_sync_on_main_queue(void (^block)(void)) {
 }
 
 #pragma mark 截取当前帧画面
-- (UIImage *)snapshotCurrentFrameWithPNG:(BOOL)asPNG {
+- (UIImage *)snapshotCurrentFrameWithAsPNG:(BOOL)asPNG {
     if (self.isAnimating) {
         _JPLog(@"[SVGARePlayer_%p] 播放中，无法截取", self);
         return nil;
@@ -522,6 +521,26 @@ static inline void _jp_dispatch_sync_on_main_queue(void (^block)(void)) {
     }
     
     return image;
+}
+
+- (void)renderCurrentFrameInContext:(UIGraphicsImageRendererContext *)context {
+    if (self.isAnimating) {
+        _JPLog(@"[SVGARePlayer_%p] 播放中，无法截取", self);
+        return;
+    }
+    
+    if (!context) {
+        _JPLog(@"[SVGARePlayer_%p] 传入context为nil，无法截取", self);
+        return;
+    }
+    
+    if ([NSThread isMainThread]) {
+        [self.drawLayer renderInContext:context.CGContext];
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self.drawLayer renderInContext:context.CGContext];
+        });
+    }
 }
 
 #pragma mark - 私有方法

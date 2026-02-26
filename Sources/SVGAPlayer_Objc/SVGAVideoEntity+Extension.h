@@ -6,6 +6,7 @@
 //
 
 #import "SVGAVideoEntity.h"
+#import "SVGAAudioEntity.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +30,8 @@ typedef NS_ENUM(NSUInteger, SVGAVideoEntityError) {
 @property (readonly) NSTimeInterval duration;
 /// 资源错误
 @property (readonly) SVGAVideoEntityError entityError;
+/// 是否带有音频
+@property (readonly) BOOL isHasAudio;
 @end
 
 NS_ASSUME_NONNULL_END
