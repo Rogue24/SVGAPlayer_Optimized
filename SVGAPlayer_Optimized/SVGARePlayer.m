@@ -488,7 +488,6 @@ static inline void _jp_dispatch_sync_on_main_queue(void (^block)(void)) {
 }
 
 #pragma mark 截取当前帧画面
-
 - (UIImage *)snapshotCurrentFrameWithAsPNG:(BOOL)asPNG {
     if (self.isAnimating) {
         _JPLog(@"[SVGARePlayer_%p] 播放中，无法截取", self);
