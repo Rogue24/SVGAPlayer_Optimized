@@ -111,7 +111,7 @@ private extension ViewController {
                 return
             }
             
-            guard let image = self.player.snapshotCurrentFrame(withPNG: true) else {
+            guard let image = self.player.snapshotCurrentFrameWith(asPNG: true) else {
                 DispatchQueue.main.async {
                     JPProgressHUD.showError(withStatus: "截取失败")
                     if isPlaying { self.player.play() }
