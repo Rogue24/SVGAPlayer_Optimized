@@ -419,7 +419,7 @@ This library now supports Swift Package Manager. Please use the `SPM` branch:
 
 Or add the following URL in Xcode and select the `SPM` branch:
 
-```
+```swift
 https://github.com/Rogue24/SVGAPlayer_Optimized.git
 ```
 
