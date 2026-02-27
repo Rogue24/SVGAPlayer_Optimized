@@ -4,10 +4,14 @@ platform :ios, '12.0'
 target 'Demo' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
-
-  pod 'SVGAPlayer', :git => 'https://github.com/Rogue24/SVGAPlayer-iOS.git', :tag => '2.5.8' # 升级了pb的源仓库（fork）
-#  pod 'SVGAPlayer_Optimized', :git => 'https://github.com/Rogue24/SVGAPlayer_Optimized.git', :tag => '0.1.4' # 远程仓库
+  
+  # 升级了pb的源仓库（fork）
+  pod 'SVGAPlayer', :git => 'https://github.com/Rogue24/SVGAPlayer-iOS.git', :tag => '2.5.8'
+  
+  # 远程仓库
+#  pod 'SVGAPlayer_Optimized', :git => 'https://github.com/Rogue24/SVGAPlayer_Optimized.git', :tag => '0.1.4'
   pod 'SVGAPlayer_Optimized', :path => '../'
+  
   pod 'SVProgressHUD'
 
   post_install do |installer|
