@@ -405,6 +405,7 @@ That said, I *did* fork [SVGAPlayer](https://github.com/Rogue24/SVGAPlayer-iOS),
 ```ruby
 pod 'SVGAPlayer', :git => 'https://github.com/Rogue24/SVGAPlayer-iOS.git', :tag => '2.5.8'
 pod 'SVGAPlayer_Optimized', :git => 'https://github.com/Rogue24/SVGAPlayer_Optimized.git', :tag => '0.1.4'
+```
 
 #### Swift Package Manager Support
 
