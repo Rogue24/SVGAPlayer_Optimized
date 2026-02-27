@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name         = 'SVGAPlayer_Optimized'
-  s.version      = '0.1.3'
+  s.version      = '0.1.4'
   s.summary      = 'An optimized SVGA player with Swift and Objective-C extensions.'
   s.description  = 'SVGARePlayer is a refactored version based on SVGAPlayer, and SVGAExPlayer is an enhanced version of SVGARePlayer. Besides retaining the original functionality, I mainly optimized "loading prevention" and "API simplification".'
   s.homepage     = 'https://github.com/Rogue24/SVGAPlayer_Optimized'
