@@ -124,6 +124,19 @@ enum SVGAExPlayerError: Swift.Error, LocalizedError {
     case playFailed(_ svgaSource: String, _ error: SVGARePlayerPlayError)
 }
 
+
+// MARK: - 播放开始位置
+public
+enum SVGAPlayFrom {
+    /// 头部位置（`leadingFrame`）
+    case leading
+    /// 尾部位置（`trailingFrame`）
+    case trailing
+    /// 自定义帧数位置
+    case custom(_ frame: Int)
+}
+
+
 @objcMembers open
 class SVGAExPlayer: SVGARePlayer {
     // MARK: - 自定义加载器/下载器/缓存键生成器
@@ -236,7 +249,7 @@ class SVGAExPlayer: SVGARePlayer {
     public private(set) var svgaSource: String = ""
     
     /// SVGA资源对象
-    public private(set) var entity: SVGAVideoEntity?
+    public private(set) var entity: SVGAVideoEntity? = nil
     
     /// 当前状态
     public private(set) var status: SVGAExPlayerStatus = .idle {
@@ -273,8 +286,8 @@ class SVGAExPlayer: SVGARePlayer {
     
     /// 用于记录异步回调时的停止情景（用于如果在SVGA资源加载过程中停止了动画，加载完成时还原停止的场景）
     private var _willStopScene: SVGARePlayerStoppedScene? = nil
-    /// 用于记录异步回调时的启动帧数
-    private var _willFromFrame = 0
+    /// 用于记录异步回调时的播放开始位置
+    private var _willPlayFrom: SVGAPlayFrom = .leading
     /// 用于记录异步回调时是否自动播放
     private var _isWillAutoPlay = false
     
@@ -409,7 +422,7 @@ private extension SVGAExPlayer {
 
 // MARK: - 加载SVGA
 private extension SVGAExPlayer {
-    func _loadSVGA(_ svgaSource: String, fromFrame: Int, isAutoPlay: Bool) {
+    func _loadSVGA(_ svgaSource: String, playFrom from: SVGAPlayFrom, isAutoPlay: Bool) {
         if svgaSource.count == 0 {
             _cleanAll()
             _failedCallback(.unknownSource(svgaSource))
@@ -420,12 +433,12 @@ private extension SVGAExPlayer {
             _loadTag = nil
             _debugLog("已经有了，不用加载 \(svgaSource)")
             resetLoopCount()
-            _playSVGA(fromFrame: fromFrame, isAutoPlay: isAutoPlay, isNew: false)
+            _playSVGA(from: from, isAutoPlay: isAutoPlay, isNew: false)
             return
         }
         
         // 记录最新状态
-        _willFromFrame = fromFrame
+        _willPlayFrom = from
         _isWillAutoPlay = isAutoPlay
         
         guard !isLoading else {
@@ -539,7 +552,7 @@ private extension SVGAExPlayer {
                         _ svgaSource: String,
                         _ loadTag: UUID,
                         _ isAutoPlay: Bool) {
-        let cacheKey = cacheKeyGenerator?(svgaSource) ?? (Self.cacheKeyGenerator?(svgaSource) ?? svgaSource)
+        let cacheKey = self.cacheKeyGenerator?(svgaSource) ?? (Self.cacheKeyGenerator?(svgaSource) ?? svgaSource)
         let parser = SVGAParser()
         parser.enabledMemoryCache = isEnabledMemoryCache
         parser.parse(with: data, cacheKey: cacheKey) { [weak self] entity in
@@ -605,9 +618,12 @@ private extension SVGAExPlayer {
         exDelegate?.svgaExPlayer?(self, svga: svgaSource, parseDone: entity)
         // 如果SVGA资源加载过程中停止了动画，则还原停止的场景
         if let scene = _willStopScene {
+            // _willStopScene是在_hideForEndAnimationIfNeeded的回调中存储的，说明此时alpha已经确定好了，
+            // 能来到这里说明还是在相同环境下（因为任何举动都会清空_willStopScene），
+            // 所以无需执行stop(then: scene)丢进_hideForEndAnimationIfNeeded中进行alpha过渡再回调闭包的操作，直接停止。
             _stopSVGA(scene)
         } else {
-            _playSVGA(fromFrame: _willFromFrame, isAutoPlay: _isWillAutoPlay, isNew: true)
+            _playSVGA(from: _willPlayFrom, isAutoPlay: _isWillAutoPlay, isNew: true)
         }
     }
 }
@@ -615,12 +631,21 @@ private extension SVGAExPlayer {
 
 // MARK: - 播放 | 停止 | 清空
 private extension SVGAExPlayer {
-    func _playSVGA(fromFrame: Int, isAutoPlay: Bool, isNew: Bool) {
-        var kFrame = fromFrame
+    func _playSVGA(from: SVGAPlayFrom, isAutoPlay: Bool, isNew: Bool) {
+        var kFrame: Int
+        switch from {
+        case .leading:
+            kFrame = leadingFrame
+        case .trailing:
+            kFrame = trailingFrame
+        case let .custom(frame):
+            kFrame = frame
+        }
+        
         var isPlay = isAutoPlay
         
         if let exDelegate, let readyForPlay = exDelegate.svgaExPlayer(_:svga:readyForPlay:fromFrame:isWillPlay:resetHandler:) {
-            readyForPlay(self, svgaSource, isNew, fromFrame, isAutoPlay, {
+            readyForPlay(self, svgaSource, isNew, kFrame, isPlay, {
                 kFrame = $0
                 isPlay = $1
             })
@@ -792,12 +817,12 @@ public extension SVGAExPlayer {
     /// 播放目标SVGA
     /// - Parameters:
     ///   - svgaSource: SVGA资源路径
-    ///   - fromFrame: 从第几帧开始
+    ///   - from: 播放开始位置
     ///   - isAutoPlay: 是否自动开始播放
-    func play(_ svgaSource: String, fromFrame: Int, isAutoPlay: Bool) {
+    func play(_ svgaSource: String, from: SVGAPlayFrom, isAutoPlay: Bool) {
         _willStopScene = nil // 取消原本加载完成后的停止操作
         guard self.svgaSource != svgaSource else {
-            _loadSVGA(svgaSource, fromFrame: fromFrame, isAutoPlay: isAutoPlay)
+            _loadSVGA(svgaSource, playFrom: from, isAutoPlay: isAutoPlay)
             return
         }
         _loadTag = nil
@@ -808,8 +833,35 @@ public extension SVGAExPlayer {
         status = .idle
         _hideForSwitchSourceIfNeeded { [weak self] in
             guard let self else { return }
-            self._loadSVGA(svgaSource, fromFrame: fromFrame, isAutoPlay: isAutoPlay)
+            self._loadSVGA(svgaSource, playFrom: from, isAutoPlay: isAutoPlay)
         }
+    }
+    
+    /// 播放目标SVGA
+    /// - Parameters:
+    ///   - svgaSource: SVGA资源路径
+    ///   - frame: 从第几帧开始
+    ///   - isAutoPlay: 是否自动开始播放
+    func play(_ svgaSource: String, fromFrame frame: Int, isAutoPlay: Bool) {
+        play(svgaSource, from: .custom(frame), isAutoPlay: isAutoPlay)
+    }
+    
+    /// 播放目标SVGA（从末尾开始）
+    /// 如果设置过`startFrame`或`endFrame`，则从`trailingFrame`开始
+    /// - Parameters:
+    ///   - svgaSource: SVGA资源路径
+    ///   - isAutoPlay: 是否自动开始播放
+    func playFromTrailing(_ svgaSource: String, isAutoPlay: Bool) {
+        play(svgaSource, from: .trailing, isAutoPlay: isAutoPlay)
+    }
+    
+    /// 播放目标SVGA（从头开始）
+    /// 如果设置过`startFrame`或`endFrame`，则从`leadingFrame`开始
+    /// - Parameters:
+    ///   - svgaSource: SVGA资源路径
+    ///   - isAutoPlay: 是否自动开始播放
+    func playFromLeading(_ svgaSource: String, isAutoPlay: Bool) {
+        play(svgaSource, from: .leading, isAutoPlay: isAutoPlay)
     }
     
     /// 播放目标SVGA（从头开始、自动播放）
@@ -817,15 +869,15 @@ public extension SVGAExPlayer {
     /// - Parameters:
     ///   - svgaSource: SVGA资源路径
     func play(_ svgaSource: String) {
-        play(svgaSource, fromFrame: leadingFrame, isAutoPlay: true)
+        play(svgaSource, from: .leading, isAutoPlay: true)
     }
     
     /// 播放目标SVGA
     /// - Parameters:
     ///   - entity: SVGA资源（`svgaSource`为`entity`的内存地址）
-    ///   - fromFrame: 从第几帧开始
+    ///   - from: 播放开始位置
     ///   - isAutoPlay: 是否自动开始播放
-    func play(with entity: SVGAVideoEntity, fromFrame: Int, isAutoPlay: Bool) {
+    func play(with entity: SVGAVideoEntity, from: SVGAPlayFrom, isAutoPlay: Bool) {
         _loadTag = nil // 取消当前加载
         _willStopScene = nil // 取消原本加载完成后的停止操作
         
@@ -836,7 +888,7 @@ public extension SVGAExPlayer {
         if self.svgaSource == svgaSource, self.entity != nil {
             _debugLog("已经有了，不用加载 \(svgaSource)")
             resetLoopCount()
-            _playSVGA(fromFrame: fromFrame, isAutoPlay: isAutoPlay, isNew: false)
+            _playSVGA(from: from, isAutoPlay: isAutoPlay, isNew: false)
             return
         }
         
@@ -852,8 +904,35 @@ public extension SVGAExPlayer {
             self.videoItem = entity
             self.entity = entity
             
-            self._playSVGA(fromFrame: fromFrame, isAutoPlay: isAutoPlay, isNew: true)
+            self._playSVGA(from: from, isAutoPlay: isAutoPlay, isNew: true)
         }
+    }
+    
+    /// 播放目标SVGA
+    /// - Parameters:
+    ///   - entity: SVGA资源（`svgaSource`为`entity`的内存地址）
+    ///   - frame: 从第几帧开始
+    ///   - isAutoPlay: 是否自动开始播放
+    func play(with entity: SVGAVideoEntity, fromFrame frame: Int, isAutoPlay: Bool) {
+        play(with: entity, from: .custom(frame), isAutoPlay: isAutoPlay)
+    }
+    
+    /// 播放目标SVGA（从末尾开始）
+    /// 如果设置过`startFrame`或`endFrame`，则从`trailingFrame`开始
+    /// - Parameters:
+    ///   - entity: SVGA资源（`svgaSource`为`entity`的内存地址）
+    ///   - isAutoPlay: 是否自动开始播放
+    func playFromTrailing(with entity: SVGAVideoEntity, isAutoPlay: Bool) {
+        play(with: entity, from: .trailing, isAutoPlay: isAutoPlay)
+    }
+    
+    /// 播放目标SVGA（从头开始）
+    /// 如果设置过`startFrame`或`endFrame`，则从`leadingFrame`开始
+    /// - Parameters:
+    ///   - entity: SVGA资源（`svgaSource`为`entity`的内存地址）
+    ///   - isAutoPlay: 是否自动开始播放
+    func playFromLeading(with entity: SVGAVideoEntity, isAutoPlay: Bool) {
+        play(with: entity, from: .leading, isAutoPlay: isAutoPlay)
     }
     
     /// 播放目标SVGA（从头开始、自动播放）
@@ -861,10 +940,52 @@ public extension SVGAExPlayer {
     /// - Parameters:
     ///   - entity: SVGA资源（`svgaSource`为`entity`的内存地址）
     func play(with entity: SVGAVideoEntity) {
-        play(with: entity, fromFrame: leadingFrame, isAutoPlay: true)
+        play(with: entity, from: .leading, isAutoPlay: true)
     }
     
-    /// 播放当前SVGA（从当前所在帧开始）
+    /// 播放当前SVGA
+    /// - Parameters:
+    ///  - from: 播放开始位置
+    ///  - isAutoPlay: 是否自动开始播放
+    func play(from: SVGAPlayFrom, isAutoPlay: Bool) {
+        guard svgaSource.count > 0 else { return }
+        _willStopScene = nil // 取消原本加载完成后的停止操作
+        
+        if entity == nil {
+            _debugLog("播放 - 需要加载")
+            _loadSVGA(svgaSource, playFrom: from, isAutoPlay: isAutoPlay)
+            return
+        }
+        
+        _debugLog("播放 - 无需加载 继续")
+        _playSVGA(from: from, isAutoPlay: isAutoPlay, isNew: false)
+    }
+    
+    /// 播放当前SVGA
+    /// - Parameters:
+    ///   - frame: 从第几帧开始
+    ///   - isAutoPlay: 是否自动开始播放
+    func play(fromFrame frame: Int, isAutoPlay: Bool) {
+        play(from: .custom(frame), isAutoPlay: isAutoPlay)
+    }
+    
+    /// 播放当前SVGA（从末尾开始）
+    /// 如果设置过`startFrame`或`endFrame`，则从`trailingFrame`开始
+    /// - Parameters:
+    ///   - isAutoPlay: 是否自动开始播放
+    func playFromTrailing(isAutoPlay: Bool) {
+        play(from: .trailing, isAutoPlay: isAutoPlay)
+    }
+    
+    /// 播放当前SVGA（从头开始）
+    /// 如果设置过`startFrame`或`endFrame`，则从`leadingFrame`开始
+    /// - Parameters:
+    ///   - isAutoPlay: 是否自动开始播放
+    func playFromLeading(isAutoPlay: Bool) {
+        play(from: .leading, isAutoPlay: isAutoPlay)
+    }
+    
+    /// 播放当前SVGA（从当前所在帧开始、自动播放）
     func play() {
         _willStopScene = nil // 取消原本加载完成后的停止操作
         switch status {
@@ -877,24 +998,6 @@ public extension SVGAExPlayer {
         default:
             play(fromFrame: currentFrame, isAutoPlay: true)
         }
-    }
-    
-    /// 播放当前SVGA
-    /// - Parameters:
-    ///  - fromFrame: 从第几帧开始
-    ///  - isAutoPlay: 是否自动开始播放
-    func play(fromFrame: Int, isAutoPlay: Bool) {
-        guard svgaSource.count > 0 else { return }
-        _willStopScene = nil // 取消原本加载完成后的停止操作
-        
-        if entity == nil {
-            _debugLog("播放 - 需要加载")
-            _loadSVGA(svgaSource, fromFrame: fromFrame, isAutoPlay: isAutoPlay)
-            return
-        }
-        
-        _debugLog("播放 - 无需加载 继续")
-        _playSVGA(fromFrame: fromFrame, isAutoPlay: isAutoPlay, isNew: false)
     }
     
     // MARK: Pause
@@ -923,12 +1026,12 @@ public extension SVGAExPlayer {
         
         if entity == nil {
             _debugLog("重播 - 需要加载")
-            _loadSVGA(svgaSource, fromFrame: leadingFrame, isAutoPlay: isAutoPlay)
+            _loadSVGA(svgaSource, playFrom: .leading, isAutoPlay: isAutoPlay)
             return
         }
         
         _debugLog("重播 - 无需加载")
-        _playSVGA(fromFrame: leadingFrame, isAutoPlay: isAutoPlay, isNew: false)
+        _playSVGA(from: .leading, isAutoPlay: isAutoPlay, isNew: false)
     }
     
     // MARK: Stop & Clean

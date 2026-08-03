@@ -275,9 +275,9 @@ func play()
 
 /// Play the current SVGA
 /// - Parameters:
-///   - fromFrame: From which frame to start
-///   - isAutoPlay: Whether to start playing automatically
-func play(fromFrame: Int, isAutoPlay: Bool) 
+///  - from: The starting position to play from (`.leading`, `.trailing`, or `.custom(frame)`)
+///  - isAutoPlay: Whether to start playing automatically
+func play(from: SVGAPlayFrom, isAutoPlay: Bool) 
 
 /// Reset the current SVGA (back to the beginning, reset completion count)
 /// If `startFrame` or `endFrame` is set, it starts from `leadingFrame`
