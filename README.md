@@ -403,7 +403,7 @@ That said, I *did* fork [SVGAPlayer](https://github.com/Rogue24/SVGAPlayer-iOS),
 #### If needed, you can install both libraries via CocoaPods:
 
 ```ruby
-pod 'SVGAPlayer', :git => 'https://github.com/Rogue24/SVGAPlayer-iOS.git', :tag => '2.5.9'
+pod 'SVGAPlayer', :git => 'https://github.com/Rogue24/SVGAPlayer-iOS.git', :tag => '2.6.0'
 pod 'SVGAPlayer_Optimized', :git => 'https://github.com/Rogue24/SVGAPlayer_Optimized.git', :tag => '0.1.5'
 ```
 
